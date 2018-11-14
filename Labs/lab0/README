@@ -1,0 +1,38 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+lab0.c:
+lab0.c is my source code that contains a main function and a sig handler function. The function first creates variables to hold all of the arguments, and then getopt_long to collect the variables. The function saves the name of the input and output files. If the segment fault flag is used, a segmenation fault is forced by calling a subroutine that sets a pointer to NULL and then tries to store something. If the catch flag is used, a SIGSEGV handler is used to catch the segmentation fault, which calls my other function, sig_handler. The main function then opens the input file, closes the file descriptor, duplicates the file to the new file descriptor, and then closes the old file descriptor. Then the same thing is done with the output file. Then a character string is used to read input from the input file and put it in the output file.
+
+Makefile:
+The Makefile first has a default option to build the executable using multiple flags such as -c -Wall -Wextra -g and -o in order to maximize compile-time error checking and to be able to use the advanced debugging features of the gbd. The clean removes all files, including any with a .o, .txt, or .tar.gz, which effectivly returns the directory to its freshly untared state. The dist builds the distribution tarbell by using tar -czvf. Finally, check runs several smoke test to be able to see if the program works succesful. The tests I ran made sure that the program exited successfully when I had correct arguments. When I had an input file that did not exist, an input file that could not be read, or an output file that could not be written to, I checked that the error codes were correct. When an argument that wasn't listed was used, I checked that the program exited correctly.
+
+
+README:
+This README page describes all included files and the smoke tests cases.
+
+backtrace.png: 
+This shows a screenshot of using the gdb to see the backtrace when running the program with the --segfault flag.
+
+breakpoint.png:
+This shows  a screenshot of using the gdb to set a breakpoint to see a bad assignment was set to NULL when using the --segfault flag. 
+
+
+Useful information I used to help me:
+
+getopt:
+To understand getopt, I used three websites in order to learn how to use the struct required for getopt_long and how to use a while loop to check all of the different arguments I might obtain. These websites are: 
+http://www.informit.com/articles/article.aspx?p=175771&seqNum=3
+https://linux.die.net/man/3/getopt_long
+http://man7.org/linux/man-pages/man3/getopt.3.html
+
+signal:
+To more deeply understand the signal function, I used a website to search how to create another function, sig_handler, to handle SIGSEGV calls:
+https://www.thegeekstuff.com/2012/03/catch-signals-sample-c-code/
+
+When initally running my lab0.c, I had a couple of errors, for which I used stackoverflow to help me overcome. One problem was in my switch statement, I need a semicolon before I declared another variable:
+https://stackoverflow.com/questions/18496282/why-do-i-get-a-label-can-only-be-part-of-a-statement-and-a-declaration-is-not-a
+
+Finally, I used a website to remind me how to create a makefile that is useful:
+https://help.eclipse.org/mars/index.jsp?topic=%2Forg.eclipse.cdt.doc.user%2Ftasks%2Fcdt_t_new_make.htm
