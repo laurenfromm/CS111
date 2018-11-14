@@ -1,0 +1,12 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+
+Contents  of lab3b-404751250.tar.gz:
+
+Makefile: Copies the program into an executable and gives executable access using chmod in order to build the program, makes a tarbell using the tar command with -czvf flag containing all contents, and cleans the  files by deleting unnessary files.
+
+README: Contains important information about the files included in the tarbell.
+
+lab3b.c: C source file that examines on-disk data structures and analyzes summaries to detect errors and inconsistencies.
