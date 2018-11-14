@@ -1,0 +1,18 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+lab1b-client.c:
+A program that sends commands to a server program, which then sends the command to shell, and then recieives the result of the command. It accepts and a compress option, which compresses bytes when sent to the server, and a log option, which logs what is sent.
+
+lab1b-server.c:
+A program that recieves commands from the client, sends them to the shell, and then returns the results to the client. It accepts a compress argument, which will compress bytes when sent to the client.
+
+Makefile: 
+Make builds the program by compiling with -Wall and -Wextra, clean cleans by removing files created with rm, and dist make a tarbell containing README, Makefile, lab1b-server.c and lab1b-client.c using tar.
+
+README:
+Provides information about all of the files in the tarbell and any other resources used in the lab.
+
+OTHER RESOURCES:
+I used resources given by the spec to learn about compression using the zlib library and to learn about sockets.
