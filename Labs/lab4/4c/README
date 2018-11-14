@@ -1,0 +1,21 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+Description of files included in tarbell:
+
+Makefile: 
+	Builds the program using the -Wall and -Wextra flags to create an executable, creates a tarbell with all of the files, and cleans the files by deleting any unnecessary files.
+
+README: 
+	Description of all files included in the tarbell.
+
+lab4c_tlp.c:
+	Program that uses the Beaglebone to read temperature print out the temperature and time with various commands. Commands are obtained from a TCP server and logged on that server, with the hostname and port number given in the commandline.
+
+lab4c_tls.c
+	Program that does what lab4c_tlp does, except ir reads input/output from a TLS server instead of TCP. The OpenSSL library is used.
+
+Extra resources:
+
+https://linux.die.net/man/3/getopt_long : Helped teach me how to get a non-option argument with getopt
