@@ -1,0 +1,13 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+lab3a.c: 
+	 Executable that takes in an .img file as an argument and outputs different stats about the superblocks, groups, inodes, and directories in .csv format.
+
+
+Makefile: 
+	  Builds and compiles the program to produce an executable, creates a tarbell with all included files, removes all programs and outputs made by the Makefile.
+
+README:
+	Describes all of the files included in submission.
