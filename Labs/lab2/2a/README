@@ -1,0 +1,65 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+Results of the tests will be in lab2_add.csv.
+
+QUESTION 2.1.1 - causing conflicts:
+Why does it take many iterations before errors are seen?
+Why does a significantly smaller number of iterations so seldom fail?
+
+When there are only a few iterations, it is unlikely that an interrupt will occur. If a thread only has to iterate 10 times, it will probably complete those 10 iterations of adding to counter before another iteration starts. If there are a lot of iterations, however, a thread will take a long time to go through a loop a lot of times, so the OS will probably interrupt and switch to a new thread, creating a race condition where the counter variable is affected by two different threads at the same time. 
+
+
+Why are the --yield runs so much slower?
+Where is the additional time going?
+Is it possible to get valid per-operation timings if we are using the --yield option?
+If so, explain how. If not, explain why not.
+
+The --yield runs so much slower because when a thread goes to the add function, it will automatically yield which gives control to another thread using a context switch. All of these context switches become very expensive when they are used everytime we increment or decrement the counter. No it is not possible to get a valid per-operation timing using the --yield option because every time a thread is trying to perform an operation, it gets interrupted and then the other threads all run parts of their jobs until the original thread gets control and continue its operation, so all of the context switches are included in the per-operation timings.
+
+QUESTION 2.1.3 - measurement errors:
+Why does the average cost per operation drop with increasing iterations?
+If the cost per iteration is a function of the number of iterations, how do we know how many iterations to run (or what the "correct" cost is)?
+
+No matter how many iterations there are, the program will still spend some time creating the amount of threads for the program, and this time will remain constant. As there are more and more iterations, this time is bein split up into smaller amounts per iteration, so the cost per iteration seems smaller. In order to get the "correct" cost, we want the number of iterations to be as big as possible, so  that the time spent creating threads is barely accounted for in each cost per iteration.
+
+QUESTION 2.1.4 - costs of serialization:
+Why do all of the options perform similarly for low numbers of threads?
+Why do the three protected operations slow down as the number of threads rises?
+
+For only one thread, the program doesn't have to worry about race conditions since the program can't be interrupted for another process, therefore all of the options perform correctly, and the time per operation is similar among the options because no context switches are occuring. For numbers that are comparitivly lower like 2 and 4 threads, the time per operation is still similar switching between 2 or 4 programs doesn't waste too much time, and this can also be optimized using multiple CPUs. The three protected operations slow down as the number of threads rises because when a thread tries to access a critical section while another thread already has it, instead of yielding, it waits until the control is transferred. This causes alot of wait time that is useless to the process.
+
+QUESTION 2.2.1 - scalability of Mutex
+Compare the variation in time per mutex-protected operation vs the number of threads in Part-1 (adds) and Part-2 (sorted lists).
+Comment on the general shapes of the curves, and explain why they have this shape.
+Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+
+Both part 1 and part 2 have roughly linear trends when comparing time per mutex-operation versus threads, with part 1 evening out as more and more threads get added. Both curves look as though they are flattening out as the number of threads gets higher, which is due to the fact that mutexes are good at handling a lot of threads during critical sections. Part 2 looks as though it has a higher rate of increase, which is due to the fact that it is performing more operations, but overall both curves are similar.
+
+QUESTION 2.2.2 - scalability of spin locks
+Compare the variation in time per protected operation vs the number of threads for list operations protected by Mutex vs Spin locks. Comment on the general shapes of the curves, and explain why they have this shape.
+Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+
+The mutexes has a much more efficient time per operation versus number of threads than spin locks. The mutexes' curve is mostly linear, with the shape flattening out as more threads get added. The spin lock, on the the other hand, is very sharply rising almost exponentially. This is because the spin lock method wastes a lot of time spinning and waiting for the lock to be open so it can go through the critical section. 
+
+
+
+Files included: 
+lab2_add.c: Program testing threads and locks on a counter that is incremented and decremented by different threads.
+lab2_list.c: Program testing threads and locks and yielding by adding elements to a linked list, getting the length of the list, and then deleting the elements, all done by different threads.
+SortedList.h: Header program declaring linked list functions
+SortedList.c: Program defining linked list functions such as adding to a linked list, deleting, finding items, and finding the length of the list.
+lab2_add-1.png: Graph of threads and iterations required to generate a failure.
+lab2_add-2.png: Graph of average time per iteration with and without yields.
+lab2_add-3.png: Graph of average time per iteration versus the number of iterations.
+lab2_add-4.png: Graph of threads and iterations that run with yields and synchronization options.
+lab2_add-5.png: Graph of average time per opeation versus the number of threads.
+lab2_list-1.png: Graph of average time per unprotected operation versus number of iterations.
+lab2_list-2.png: Graph of threads and iterations that generate a failure.
+lab2_list-3.png: Graph of iterations that run without failure.
+lab2_list-4.png: Graph of cost per operation verus the number of threads.
+lab2_add.csv: Data of all the tests run from the makecheck for add.
+lab2_list.csv: Data of all the tests run from the make check for list.
+README: File describing all of the files in the tarbell.
+Makefile: Builds lab2_add and lab2_list, creates tests, creates graphs, cleans the files, and creates the final tarbell.
