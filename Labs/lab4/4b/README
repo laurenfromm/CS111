@@ -1,0 +1,14 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+Files included:
+
+lab4b.c:
+	Program that builds and runs on a beaglebone and reads out the temperature and time. It takes in a few commands that controls output readings.
+
+Makefile:
+	Builds and tests program by compiling it, cleaning it, making a tarbell, and running some simple tests.
+
+README:
+	Description of files included in tarbell and any other resouces used.
