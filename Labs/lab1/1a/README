@@ -1,0 +1,29 @@
+NAME: Lauren Fromm
+EMAIL: laurenfromm@gmail.com
+ID: 404751250
+
+lab1a.c:
+A program using multi process applications such as threads and polls to create a character-at-a-time full duplex terminal I/O.
+
+Makefile:
+(Make) builds the program by compiling with -Wall and -Wextra, (clean) cleans by using rm, and (dist)  makes a tarbell using tar.
+
+README: 
+Provides information about all of the files in the tarbell and other resources used for the lab.
+
+
+OTHER RESOURCES:
+The following are websites that I used to help understnad some concepts.
+To understand how to check that the progam was recieving input from the terminal using stty, I used:
+https://linux.die.net/man/1/stty
+
+To understand Poll, I used the man page.
+
+To understand the difference between dup and dup2, I used
+http://www.informit.com/articles/article.aspx?p=99706&seqNum=12
+
+To better understand termios and tsetattr and tgetsttr, I used
+http://pubs.opengroup.org/onlinepubs/009695399/functions/tcsetattr.html
+
+To better understand pipes, I used:
+http://tldp.org/LDP/lpg/node11.html
