@@ -1,0 +1,262 @@
+Total: 23 samples
+      23 100.0% 100.0%       23 100.0% threadFunc
+ROUTINE ====================== threadFunc in /u/cs/ugrad/jeanne/cs111/lab2b/lab2_list.c
+    23     23 Total samples (flat / cumulative)
+     .      .   53:     val = ((val << 5) + val) + key[i];
+     .      .   54:   return val;
+     .      .   55: }
+     .      .   56: 
+     .      .   57: void* threadFunc(void* arg)
+---
+     .      .   58: {
+     .      .   59:   
+     .      .   60:   int i = *(int *) arg;
+     .      .   61:   if(debug)
+     .      .   62:     fprintf(stderr, "in threadfunc \n");
+     .      .   63:   for (; i < elementNum; i+=threadNum)
+     .      .   64:     {
+     .      .   65:       if(debug)
+     .      .   66: 	fprintf(stderr, "in for\n");
+     .      .   67:       if(syncOp == 's')
+     .      .   68: 	{
+     .      .   69: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+    13     13   70: 	  while (__sync_lock_test_and_set(&spinLock[listID[i]], 1))
+     .      .   71: 	    {	    
+     .      .   72: 	      continue;
+     .      .   73: 	
+     .      .   74: 	    }
+     .      .   75: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .   76: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .   77: 	}
+     .      .   78:       else if(syncOp == 'm'){ 
+     .      .   79: 	if(debug)
+     .      .   80: 	  fprintf(stderr, "in if\n");
+     .      .   81: 	clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .   82: 	if(debug)
+     .      .   83: 	  fprintf(stderr, "before\n");
+     .      .   84: 	pthread_mutex_lock(&count_mutex[listID[i]]);
+     .      .   85: 	if(debug)
+     .      .   86: 	  fprintf(stderr, "after\n");
+     .      .   87: 	clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .   88: 	lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .   89:       }
+     .      .   90:       if(debug)
+     .      .   91: 	fprintf(stderr, "after insert\n");
+     .      .   92:       SortedList_insert(&list[listID[i]], &elements[i]);
+     .      .   93:       if(debug)
+     .      .   94: 	fprintf(stderr, "after insert\n");
+     .      .   95:       if(syncOp == 'm')
+     .      .   96:         pthread_mutex_unlock(&count_mutex[listID[i]]);
+     .      .   97:       if(syncOp == 's')
+     .      .   98:         __sync_lock_release(&spinLock[listID[i]]);
+     .      .   99: 
+     .      .  100:     }
+     .      .  101: 
+     .      .  102:   if(debug)
+     .      .  103:     fprintf(stderr, "length\n");
+     .      .  104: 
+     .      .  105:   int length;
+     .      .  106:   int it = 0;
+     .      .  107:   for(; it != listNum; it++)
+     .      .  108:     {
+     .      .  109:       if(syncOp == 's')
+     .      .  110: 	{
+     .      .  111: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  112: 	  while (__sync_lock_test_and_set(&spinLock[it], 1))
+     .      .  113: 	    {
+     .      .  114: 	      continue;
+     .      .  115: 	    }
+     .      .  116: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  117: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  118: 	}
+     .      .  119:       else if(syncOp == 'm')
+     .      .  120: 	{
+     .      .  121: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  122: 	  pthread_mutex_lock(&count_mutex[it]);
+     .      .  123: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  124: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  125: 	}
+     .      .  126:       length += SortedList_length(&list[it]);
+     .      .  127: 
+     .      .  128:       if(syncOp == 'm')
+     .      .  129: 	pthread_mutex_unlock(&count_mutex[it]);
+     .      .  130:       if(syncOp == 's')
+     .      .  131: 	__sync_lock_release(&spinLock[it]);
+     .      .  132:     }
+     .      .  133: 
+     .      .  134: 
+     .      .  135:   int k = *(int *) arg;
+     .      .  136:   SortedListElement_t *del;
+     .      .  137:   if(debug)
+     .      .  138:     fprintf(stderr, "deleting elements\n");
+     .      .  139:   for(; k < elementNum; k +=threadNum)
+     .      .  140:     {
+     .      .  141:       if(syncOp == 's')
+     .      .  142: 	{
+     .      .  143: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+    10     10  144: 	  while (__sync_lock_test_and_set(&spinLock[listID[k]], 1))
+     .      .  145: 	    {
+     .      .  146: 	      continue;
+     .      .  147: 
+     .      .  148: 	    }
+     .      .  149: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  150: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  151: 	}
+     .      .  152:       else if(syncOp == 'm')
+     .      .  153: 	{
+     .      .  154: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  155: 	  pthread_mutex_lock(&count_mutex[listID[k]]);
+     .      .  156: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  157: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  158: 	}
+     .      .  159: 
+     .      .  160:       del = SortedList_lookup(&list[listID[k]], elements[k].key);
+     .      .  161:       SortedList_delete(del);
+     .      .  162: 
+     .      .  163:       if(syncOp == 'm')
+     .      .  164: 	pthread_mutex_unlock(&count_mutex[listID[k]]);
+     .      .  165:       if(syncOp == 's')
+     .      .  166: 	__sync_lock_release(&spinLock[listID[k]]);
+     .      .  167:     }
+     .      .  168: 
+     .      .  169: 
+     .      .  170:   if(debug)
+     .      .  171:     fprintf(stderr, "leaving threadfunc\n");
+     .      .  172:   return NULL;
+     .      .  173: }
+---
+     .      .  174: 
+     .      .  175: 
+     .      .  176: int main(int argc, char* argv[])
+     .      .  177: {
+     .      .  178:   struct option longopts[] = {
+ROUTINE ====================== threadFunc in /u/cs/ugrad/jeanne/cs111/lab2b/lab2_list.c
+    23     23 Total samples (flat / cumulative)
+     .      .   53:     val = ((val << 5) + val) + key[i];
+     .      .   54:   return val;
+     .      .   55: }
+     .      .   56: 
+     .      .   57: void* threadFunc(void* arg)
+---
+     .      .   58: {
+     .      .   59:   
+     .      .   60:   int i = *(int *) arg;
+     .      .   61:   if(debug)
+     .      .   62:     fprintf(stderr, "in threadfunc \n");
+     .      .   63:   for (; i < elementNum; i+=threadNum)
+     .      .   64:     {
+     .      .   65:       if(debug)
+     .      .   66: 	fprintf(stderr, "in for\n");
+     .      .   67:       if(syncOp == 's')
+     .      .   68: 	{
+     .      .   69: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+    13     13   70: 	  while (__sync_lock_test_and_set(&spinLock[listID[i]], 1))
+     .      .   71: 	    {	    
+     .      .   72: 	      continue;
+     .      .   73: 	
+     .      .   74: 	    }
+     .      .   75: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .   76: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .   77: 	}
+     .      .   78:       else if(syncOp == 'm'){ 
+     .      .   79: 	if(debug)
+     .      .   80: 	  fprintf(stderr, "in if\n");
+     .      .   81: 	clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .   82: 	if(debug)
+     .      .   83: 	  fprintf(stderr, "before\n");
+     .      .   84: 	pthread_mutex_lock(&count_mutex[listID[i]]);
+     .      .   85: 	if(debug)
+     .      .   86: 	  fprintf(stderr, "after\n");
+     .      .   87: 	clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .   88: 	lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .   89:       }
+     .      .   90:       if(debug)
+     .      .   91: 	fprintf(stderr, "after insert\n");
+     .      .   92:       SortedList_insert(&list[listID[i]], &elements[i]);
+     .      .   93:       if(debug)
+     .      .   94: 	fprintf(stderr, "after insert\n");
+     .      .   95:       if(syncOp == 'm')
+     .      .   96:         pthread_mutex_unlock(&count_mutex[listID[i]]);
+     .      .   97:       if(syncOp == 's')
+     .      .   98:         __sync_lock_release(&spinLock[listID[i]]);
+     .      .   99: 
+     .      .  100:     }
+     .      .  101: 
+     .      .  102:   if(debug)
+     .      .  103:     fprintf(stderr, "length\n");
+     .      .  104: 
+     .      .  105:   int length;
+     .      .  106:   int it = 0;
+     .      .  107:   for(; it != listNum; it++)
+     .      .  108:     {
+     .      .  109:       if(syncOp == 's')
+     .      .  110: 	{
+     .      .  111: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  112: 	  while (__sync_lock_test_and_set(&spinLock[it], 1))
+     .      .  113: 	    {
+     .      .  114: 	      continue;
+     .      .  115: 	    }
+     .      .  116: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  117: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  118: 	}
+     .      .  119:       else if(syncOp == 'm')
+     .      .  120: 	{
+     .      .  121: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  122: 	  pthread_mutex_lock(&count_mutex[it]);
+     .      .  123: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  124: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  125: 	}
+     .      .  126:       length += SortedList_length(&list[it]);
+     .      .  127: 
+     .      .  128:       if(syncOp == 'm')
+     .      .  129: 	pthread_mutex_unlock(&count_mutex[it]);
+     .      .  130:       if(syncOp == 's')
+     .      .  131: 	__sync_lock_release(&spinLock[it]);
+     .      .  132:     }
+     .      .  133: 
+     .      .  134: 
+     .      .  135:   int k = *(int *) arg;
+     .      .  136:   SortedListElement_t *del;
+     .      .  137:   if(debug)
+     .      .  138:     fprintf(stderr, "deleting elements\n");
+     .      .  139:   for(; k < elementNum; k +=threadNum)
+     .      .  140:     {
+     .      .  141:       if(syncOp == 's')
+     .      .  142: 	{
+     .      .  143: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+    10     10  144: 	  while (__sync_lock_test_and_set(&spinLock[listID[k]], 1))
+     .      .  145: 	    {
+     .      .  146: 	      continue;
+     .      .  147: 
+     .      .  148: 	    }
+     .      .  149: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  150: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  151: 	}
+     .      .  152:       else if(syncOp == 'm')
+     .      .  153: 	{
+     .      .  154: 	  clock_gettime(CLOCK_MONOTONIC, &startLock);
+     .      .  155: 	  pthread_mutex_lock(&count_mutex[listID[k]]);
+     .      .  156: 	  clock_gettime(CLOCK_MONOTONIC, &endLock);
+     .      .  157: 	  lockTime += (BILLION * (endLock.tv_sec - startLock.tv_sec) + (endLock.tv_nsec - startLock.tv_nsec));
+     .      .  158: 	}
+     .      .  159: 
+     .      .  160:       del = SortedList_lookup(&list[listID[k]], elements[k].key);
+     .      .  161:       SortedList_delete(del);
+     .      .  162: 
+     .      .  163:       if(syncOp == 'm')
+     .      .  164: 	pthread_mutex_unlock(&count_mutex[listID[k]]);
+     .      .  165:       if(syncOp == 's')
+     .      .  166: 	__sync_lock_release(&spinLock[listID[k]]);
+     .      .  167:     }
+     .      .  168: 
+     .      .  169: 
+     .      .  170:   if(debug)
+     .      .  171:     fprintf(stderr, "leaving threadfunc\n");
+     .      .  172:   return NULL;
+     .      .  173: }
+---
+     .      .  174: 
+     .      .  175: 
+     .      .  176: int main(int argc, char* argv[])
+     .      .  177: {
+     .      .  178:   struct option longopts[] = {
